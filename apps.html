@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Apps</title>
+  <!-- Firebase App, Auth, and Database Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { firebaseConfig } from './firebase-config.js';
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // Check if user is authenticated when the page loads
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(`User authenticated: ${user.email}`);
+        displayUserApps(user.uid);
+      } else {
+        window.location.href = "/login"; // Redirect to login if no user is authenticated
+      }
+    });
+
+    // Function to display the user's apps from Firebase Realtime Database
+    function displayUserApps(userId) {
+      const appsRef = ref(db, 'users/' + userId + '/apps');
+      get(appsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const apps = snapshot.val();
+          const appsList = document.getElementById('appsList');
+          appsList.innerHTML = ''; // Clear previous list
+          
+          for (const appId in apps) {
+            const app = apps[appId];
+
+            // Check if the app was created by the current user
+            if (app.createdBy === userId) {
+              const appElement = document.createElement('li');
+              appElement.textContent = `${app.name} (Client ID: ${app.clientId})`;
+              appsList.appendChild(appElement);
+            }
+          }
+        } else {
+          document.getElementById('appsList').innerHTML = "<p>No apps found. Please create one!</p>";
+        }
+      }).catch((error) => {
+        console.error("Error fetching apps:", error);
+      });
+    }
+
+    // Function to create a new app
+    document.getElementById('createAppForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const appName = document.getElementById('appName').value;
+      const userId = auth.currentUser.uid;
+      const clientId = generateClientId(); // Generate a unique Client ID for the app
+
+      const newAppRef = ref(db, 'users/' + userId + '/apps/' + clientId);
+      set(newAppRef, {
+        name: appName,
+        clientId: clientId,
+        createdBy: userId // Store the user who created the app
+      }).then(() => {
+        console.log('App created successfully!');
+        displayUserApps(userId); // Refresh the app list
+        document.getElementById('createAppForm').reset(); // Reset the form
+      }).catch((error) => {
+        console.error("Error creating app:", error);
+      });
+    });
+
+    // Function to generate a simple unique Client ID
+    function generateClientId() {
+      return 'sp_' + Math.random().toString(36).substr(2, 9); // Simple client ID generator
+    }
+
+  </script>
+
+  <!-- Add some basic CSS styling -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      color: #444;
+    }
+
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+      padding: 20px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      padding: 10px;
+      background-color: #f9f9f9;
+      margin: 8px 0;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #createAppForm {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #createAppForm input {
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #createAppForm button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #createAppForm button:hover {
+      background-color: #45a049;
+    }
+
+    #appsList p {
+      font-size: 16px;
+      color: #888;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <h2>Manage Your Apps</h2>
+
+    <h3>Your Apps:</h3>
+    <ul id="appsList">
+      <!-- List of apps will be populated here -->
+    </ul>
+
+    <h3>Create a New App:</h3>
+    <form id="createAppForm">
+      <input type="text" id="appName" placeholder="App Name" required><br>
+      <button type="submit">Create App</button>
+    </form>
+  </div>
+</body>
+</html>
