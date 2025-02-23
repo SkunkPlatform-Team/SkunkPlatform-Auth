@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkunkPlatform Auth</title>
+  
+  <script type="module">
+    // Import Firebase App and Auth from modular SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    
+    // Import your Firebase configuration
+    import { firebaseConfig } from './firebase-config.js';
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Check if the user is logged in (from localStorage)
+    if (!localStorage.getItem("user")) {
+      window.location.href = "/login";  // Redirect to login if no user in localStorage
+    } else {
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log(`Checking credentials for: ${user.email}`);
+      
+      // Check if the email and password are valid via Firebase Authentication
+      signInWithEmailAndPassword(auth, user.email, user.password)
+        .then(() => {
+          console.log("User is authenticated in Firebase.");
+          // If the user is authenticated, show the authorization UI
+          initializeAuthUI();
+        })
+        .catch((error) => {
+          console.error("Authentication failed:", error.message);
+          alert("Invalid credentials. Please log in again.");
+          window.location.href = "/login";  // Redirect to login if authentication fails
+        });
+    }
+
+    function initializeAuthUI() {
+      // Get Client ID (cid) and Redirect URI (uri) from URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const clientId = urlParams.get("cid");
+      const redirectUri = urlParams.get("uri");  // Redirect URI
+
+      if (clientId) {
+        // If Client ID exists, display the authorization info and show the button
+        document.getElementById("clientInfo").innerHTML = ` 
+          <p><strong>App Client ID:</strong> ${clientId}</p>
+          <p>This app requires authorization.</p>
+        `;
+        document.getElementById("authorizeBtn").style.display = "block";  // Show the Authorize button
+      } else {
+        // If no Client ID exists, alert that the App Client ID is missing
+        document.getElementById("clientInfo").innerHTML = "<p>No valid Client ID found.</p>";
+      }
+
+      // Event listener for the "Authorize" button
+      document.getElementById('authorizeBtn').addEventListener('click', function() {
+        const user = JSON.parse(localStorage.getItem("user"));
+        
+        if (redirectUri) {
+          // Construct the URL with email and password as query parameters
+          const redirectUrl = `${redirectUri}?email=${encodeURIComponent(user.email)}&password=${encodeURIComponent(user.password)}`;
+          
+          // Redirect to the specified URI with email and password
+          window.location.href = redirectUrl;
+        } else {
+          alert("No redirect URI provided.");
+        }
+      });
+    }
+  </script>
+
+  <!-- Add some basic CSS styling -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 500px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #clientInfo {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #444;
+    }
+
+    #authorizeBtn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    #authorizeBtn:hover {
+      background-color: #45a049;
+    }
+
+    p {
+      font-size: 16px;
+      color: #444;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <h2>SPAuth</h2>
+    
+    <div id="clientInfo"></div> <!-- Display Client ID info -->
+    <button id="authorizeBtn">Authorize App</button> <!-- Button to trigger authorization -->
+  </div>
+</body>
+</html>
