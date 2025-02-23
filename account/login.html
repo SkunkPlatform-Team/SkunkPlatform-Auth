@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkunkPlatform Login</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js" defer type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js" defer type="module"></script>
+  <script src="/firebase-config.js" defer type="module"></script>
+</head>
+<body>
+  <h2>Login</h2>
+
+  <!-- Email Login Form -->
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="button" id="loginBtn">Login</button>
+  </form>
+
+  <!-- Google Login Button -->
+  <button id="googleLogin">Login with Google</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    import { firebaseConfig } from "/firebase-config.js";
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Event listener for the login button (email and password login)
+    document.getElementById('loginBtn').addEventListener('click', function() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Sign in with Firebase Authentication (email/password)
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          // Store user credentials in localStorage
+          localStorage.setItem("user", JSON.stringify({ email: user.email, password: password }));
+          // Redirect to home or dashboard page after successful login
+          window.location.href = "/";
+        })
+        .catch((error) => {
+          // Handle errors (e.g., incorrect login credentials)
+          alert(error.message);
+        });
+    });
+
+    // Google Auth Provider
+    const googleProvider = new GoogleAuthProvider();
+
+    // Event listener for Google login button
+    document.getElementById('googleLogin').addEventListener('click', function() {
+      signInWithPopup(auth, googleProvider)
+        .then((result) => {
+          const user = result.user;
+          // Store user credentials in localStorage
+          localStorage.setItem("user", JSON.stringify({ email: user.email, password: '' }));
+          // Redirect to home or dashboard page after successful login
+          window.location.href = "/";
+        })
+        .catch((error) => {
+          // Handle errors (e.g., login failure)
+          alert(error.message);
+        });
+    });
+  </script>
+</body>
+</html>
