@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkunkPlatform Create Account</title>
+  <script type="module">
+    // Import Firebase App and Auth from modular SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    
+    // Import your Firebase configuration
+    import { firebaseConfig } from './firebase-config.js';
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Register new user with email and password
+    document.getElementById('regForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Create a new user with Firebase Authentication
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          localStorage.setItem("user", JSON.stringify({ email: user.email, password: password }));
+          window.location.href = "/"; // Redirect to Apps page after registration
+        })
+        .catch((error) => {
+          alert(error.message); // Handle any registration errors
+        });
+    });
+
+    // Google Auth with Firebase
+    const googleProvider = new GoogleAuthProvider();
+
+    document.getElementById('googleLogin').addEventListener('click', function() {
+      signInWithPopup(auth, googleProvider)
+        .then((result) => {
+          const user = result.user;
+          localStorage.setItem("user", JSON.stringify({ email: user.email, password: '' }));
+          window.location.href = "/"; // Redirect to Apps page after successful login
+        })
+        .catch((error) => {
+          alert(error.message); // Handle any Google sign-in errors
+        });
+    });
+  </script>
+</head>
+<body>
+  <h2>Create Account</h2>
+  
+  <!-- Email Registration Form -->
+  <form id="regForm">
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Create Account</button>
+  </form>
+
+  <!-- Google Login Button -->
+  <button id="googleLogin">Login with Google</button>
+</body>
+</html>
