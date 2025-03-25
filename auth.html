@@ -59,10 +59,10 @@
       // Event listener for the "Authorize" button
       document.getElementById('authorizeBtn').addEventListener('click', function() {
         const user = JSON.parse(localStorage.getItem("user"));
-        
+
         if (redirectUri) {
           // Construct the URL with email and password as query parameters
-          const redirectUrl = `${redirectUri}?email=${encodeURIComponent(user.email)}&password=${encodeURIComponent(user.password)}`;
+          const redirectUrl = `${redirectUri}?email=${encodeURIComponent(user.email)}`;
           
           // Redirect to the specified URI with email and password
           window.location.href = redirectUrl;
