@@ -6,6 +6,9 @@ Note: If you see some scripts includes vulnerabilities, Please Create a Issue or
 ## Prevent Sharing Password
 The Password has been Removed to protect accounts.
 
+### Message
+SkunkPlatform has Resolved due to the Private Credential and its Protection of SkunkPlatform's Security.
+
 ### Status
 Resolved to Protect Account.
 
