@@ -18,4 +18,8 @@ To create your Custom Auth, follow these steps:
 4. After completing the setup for Firebase Realtime Database, place your project credentials in `firebase-config.js`. If you don't see the credentials, go to Firebase Console > Project Settings > Service Accounts > Firebase Admin SDK.
 5. Have fun with the code!
 
+## Important
+
+Be Careful of the Account Credentials, If you Use Password on the Custom Auth is not Safe.
+
 Make sure to configure and link these files properly to ensure a seamless authentication experience.
