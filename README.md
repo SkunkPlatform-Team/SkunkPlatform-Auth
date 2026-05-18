@@ -2,6 +2,8 @@
 
 The OAuth2 for Firebase Spark.
 
+<span style="color:yellow;">Deprecated Repository</span>
+
 ## How to Create My Own Custom Auth
 
 To create your Custom Auth, follow these steps:
