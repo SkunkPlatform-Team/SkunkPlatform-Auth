@@ -2,7 +2,7 @@
 
 The OAuth2 for Firebase Spark.
 
-<span style="color:yellow;">Deprecated Repository</span>
+![status](https://img.shields.io/badge/status-deprecated-yellow)
 
 ## How to Create My Own Custom Auth
 
