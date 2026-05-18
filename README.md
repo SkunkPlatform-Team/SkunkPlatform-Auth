@@ -1,27 +1,31 @@
-# Custom Auth
+# Custom Auth ![status](https://img.shields.io/badge/status-deprecated-yellow)
 
-The OAuth2 for Firebase Spark.
-
-![status](https://img.shields.io/badge/status-deprecated-yellow)
+OAuth2-style authentication system for Firebase Spark plan.
 
 ## How to Create My Own Custom Auth
 
 To create your Custom Auth, follow these steps:
 
 1. Create the following files:
-    - `auth.html`
-    - `apps.html`
-    - `login.html`
-    - `register.html`
-    - `firebase-config.js`
+   - `auth.html`
+   - `apps.html`
+   - `login.html`
+   - `register.html`
+   - `firebase-config.js`
 
-2. Ensure your Firebase Project is added to use credentials.
-3. After completing the setup for Firebase Auth, check that your HTML files and modules are imported correctly.
-4. After completing the setup for Firebase Realtime Database, place your project credentials in `firebase-config.js`. If you don't see the credentials, go to Firebase Console > Project Settings > Service Accounts > Firebase Admin SDK.
-5. Have fun with the code!
+2. Add your Firebase Web App configuration.
+3. Ensure Firebase Auth is properly enabled in your project.
+4. Place your Firebase client config inside `firebase-config.js`.
+   (Do NOT use Admin SDK credentials in frontend code.)
+5. Import and connect all modules correctly.
+6. Enjoy your project!
 
 ## Important
 
-Be Careful of the Account Credentials, If you Use Password on the Custom Auth is not Safe.
+- This system is deprecated and no longer maintained.
+- SkunkPlatform is no longer maintaining Custom-Auth.
+- SkunkPlatform uses SPA (Modern SkunkPlatform Account) for SP2026.
+- SkunkPlatform Developers are integrated into SP2026.
 
-Make sure to configure and link these files properly to ensure a seamless authentication experience.
+⚠️ Warning:
+Storing passwords manually in a custom auth system is insecure. Always prefer Firebase Authentication.
